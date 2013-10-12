@@ -8,11 +8,9 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.jcr.Binary;
 import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.ValueFormatException;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,10 +20,11 @@ import org.modeshape.jcr.ModeShapeEngine;
 import org.modeshape.jcr.RepositoryConfiguration;
 import org.modeshape.jcr.api.JcrTools;
 
+import com.dc2f.technologyplayground.modeshape.RepositoryProvider;
+
 public class Tryout {
 	public static void main(String[] args) {
-		ModeShapeEngine engine = initEngine();
-		Repository repository = initRepository(engine);
+		Repository repository = RepositoryProvider.getInstance().getRepository();
 		Session session = login(repository);
 		
 		Node root = writeData(session);
@@ -33,8 +32,7 @@ public class Tryout {
 		debugTree(root);
 
 		readContent(session);
-
-		engine.shutdown();
+		RepositoryProvider.getInstance().releaseRepository();
 	}
 
 	private static void readContent(Session session) {
@@ -105,34 +103,4 @@ public class Tryout {
 		return null;
 	}
 
-	private static Repository initRepository(ModeShapeEngine engine) {
-		Repository repository = null;
-		String repositoryName = null;
-		try {
-			URL url = Tryout.class.getClassLoader().getResource(
-					"modeshape-settings.json");
-			RepositoryConfiguration config = RepositoryConfiguration.read(url);
-			// Verify the configuration for the repository ...
-			Problems problems = config.validate();
-			if (problems.hasErrors()) {
-				System.err.println("Problems starting the engine.");
-				System.err.println(problems);
-				System.exit(-1);
-			}
-			// Deploy the repository ...
-			repository = engine.deploy(config);
-			repositoryName = config.getName();
-		} catch (Throwable e) {
-			e.printStackTrace();
-			System.exit(-1);
-			return null;
-		}
-		return repository;
-	}
-
-	private static ModeShapeEngine initEngine() {
-		ModeShapeEngine engine = new ModeShapeEngine();
-		engine.start();
-		return engine;
-	}
 }

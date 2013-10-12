@@ -1,12 +1,15 @@
 package com.dc2f.technologyplayground.modeshape;
 
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import javax.jcr.Repository;
 
 import org.modeshape.common.collection.Problems;
 import org.modeshape.jcr.ModeShapeEngine;
 import org.modeshape.jcr.ModeShapeEngine.State;
+import org.modeshape.jcr.NoSuchRepositoryException;
 import org.modeshape.jcr.RepositoryConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +30,8 @@ public class RepositoryProvider {
 	private Repository repository;
 	
 	private int openCount = 0;
+
+	private String repositoryName;
 	
 	private RepositoryProvider() {
 	}
@@ -55,8 +60,30 @@ public class RepositoryProvider {
 	
 	public void releaseRepository() {
 		openCount--;
-		if (openCount == 0) {
-			engine.shutdown();
+		if (openCount <= 0) {
+			try {
+				Future<Boolean> undeployed = engine.undeploy(repositoryName);
+				if (!undeployed.get()) {
+					LOGGER.error("Couldn't uneploy repository.");
+				}
+			} catch (NoSuchRepositoryException e) {
+				LOGGER.error("Engine doesn't know the repository any more.", e);
+			} catch (InterruptedException e) {
+				LOGGER.error("Error while undeploying the repository.", e);
+			} catch (ExecutionException e) {
+				LOGGER.error("Error while undeploying the repository.", e);
+			}
+			Future<Boolean> shutdown = engine.shutdown();
+			try {
+				if (!shutdown.get()) {
+					LOGGER.error("Couldn't shutdown the engine.");
+				}
+			} catch (InterruptedException e) {
+				LOGGER.error("Error while shutting down the engine.");
+			} catch (ExecutionException e) {
+				LOGGER.error("Error while shutting down the engine.");
+			}
+			openCount = 0;
 		}
 	}
 	
@@ -83,6 +110,7 @@ public class RepositoryProvider {
 				}
 				// Deploy the repository ...
 				repository = engine.deploy(config);
+				repositoryName = config.getName();
 			} catch (Throwable e) {
 				LOGGER.error("Error in the repository configuration file {}.", new Object[]{MODESHAPE_SETTINGS_FILE, e});
 				throw new RuntimeException(e);
