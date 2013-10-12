@@ -21,7 +21,7 @@ public class Tryout {
 		
 		writeData(session);
 
-
+		engine.shutdown();
 	}
 
 	private static Session login(Repository repository) {
