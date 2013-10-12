@@ -83,13 +83,18 @@ public class FileSystemUtils {
 						String fileName = file.getFileName().toString();
 						
 						// check if the file exists and remove it if it does
+						Node fileNode;
+						Node contentNode;
 						if(currentFolder.hasNode(fileName)) {
-							currentFolder.getNode(fileName).remove();
-						}
+//							currentFolder.getNode(fileName).remove();
+							fileNode = currentFolder.getNode(fileName);
+							contentNode = fileNode.getNode("jcr:content");
+						} else {
 						
 						// create the new file
-						Node fileNode = currentFolder.addNode(fileName, "nt:file");
-						Node contentNode = fileNode.addNode("jcr:content", "nt:resource");
+							fileNode = currentFolder.addNode(fileName, "nt:file");
+							contentNode = fileNode.addNode("jcr:content", "nt:resource");
+						}
 						contentNode.setProperty("jcr:data", session.getValueFactory().createBinary(in));
 						
 						return FileVisitResult.CONTINUE;
