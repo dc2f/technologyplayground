@@ -29,5 +29,15 @@
 			<artifactId>modeshape-jcr</artifactId>
 			<version>3.5.0.Final</version>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>0.9.30</version>
+		</dependency>
 	</dependencies>
 </project>
