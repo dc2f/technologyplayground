@@ -18,7 +18,7 @@ public class RepositoryProviderTest {
 		provider.releaseRepository();
 	}
 
-	@Test//(timeout=10000)
+	@Test(timeout=10000)
 	public void testGettingRepositoryTwice() {
 		RepositoryProvider provider = RepositoryProvider.getInstance();
 		Repository repository = provider.getRepository();
@@ -31,7 +31,7 @@ public class RepositoryProviderTest {
 		provider.releaseRepository();
 	}
 	
-	@Test
+	@Test(timeout=10000)
 	public void testRestartingEngine() throws LoginException, RepositoryException {
 		testInitRepository();
 		testInitRepository();
