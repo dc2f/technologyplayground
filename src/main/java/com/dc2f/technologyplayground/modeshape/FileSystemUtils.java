@@ -32,9 +32,11 @@ public class FileSystemUtils {
 	 * @param rootFolder root folder from where to import
 	 * @param baseNode import relative paths from rootFolder into the repository starting at baseNode
 	 */
-	public void load(final File rootFolder, final Node baseNode) {
+	public void load(File rootFolder, final Node baseNode) {
 		try {
-			Files.walkFileTree(rootFolder.toPath(), new SimpleFileVisitor<Path>() {
+			final Path rootPath = rootFolder.getAbsoluteFile().toPath();
+			
+			Files.walkFileTree(rootPath, new SimpleFileVisitor<Path>() {
 				Node currentFolder = null;
 
 				/**
@@ -47,9 +49,14 @@ public class FileSystemUtils {
 				private Node getNode(Path path) {
 					try {
 						Node node = baseNode;
+						Path relativePath = rootPath.relativize(path);
 						
-						for(Path pathPart : path) {
+						for(Path pathPart : relativePath) {
 							String name = pathPart.toString();
+							if(name.equals("")) {
+								continue;
+							}
+							
 							if(!node.hasNode(name)) {
 								node.addNode(name, "nt:folder");
 							}
@@ -73,9 +80,9 @@ public class FileSystemUtils {
 					try {
 						Session session = currentFolder.getSession();
 						InputStream in = new BufferedInputStream(new FileInputStream(file.toFile()));
+						String fileName = file.getFileName().toString();
 						
 						// check if the file exists and remove it if it does
-						String fileName = file.getFileName().toString();
 						if(currentFolder.hasNode(fileName)) {
 							currentFolder.getNode(fileName).remove();
 						}
