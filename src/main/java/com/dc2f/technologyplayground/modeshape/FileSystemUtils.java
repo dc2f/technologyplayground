@@ -21,7 +21,7 @@ public class FileSystemUtils {
 	 * @param rootFolder root folder from where to import
 	 * @param baseNode import relative paths from rootFolder into the repository starting at baseNode
 	 */
-	void load(File rootFolder, Node baseNode) {
+	public void load(File rootFolder, Node baseNode) {
 		
 	}
 }
