@@ -62,7 +62,7 @@ public class Tryout {
 		String repositoryName = null;
 		try {
 			URL url = Tryout.class.getClassLoader().getResource(
-					"my-repository-config.json");
+					"modeshape-settings.json");
 			RepositoryConfiguration config = RepositoryConfiguration.read(url);
 			// Verify the configuration for the repository ...
 			Problems problems = config.validate();
