@@ -6,6 +6,7 @@ import javax.jcr.Repository;
 
 import org.modeshape.common.collection.Problems;
 import org.modeshape.jcr.ModeShapeEngine;
+import org.modeshape.jcr.ModeShapeEngine.State;
 import org.modeshape.jcr.RepositoryConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,10 @@ public class RepositoryProvider {
 		if (engine == null) {
 			initEngine();
 		}
+		if (engine.getState().equals(State.NOT_RUNNING)) {
+			engine.start();
+		}
+		
 		if (repository == null) {
 			initRepository(engine);
 		}
@@ -50,7 +55,9 @@ public class RepositoryProvider {
 	
 	public void releaseRepository() {
 		openCount--;
-		engine.shutdown();
+		if (openCount == 0) {
+			engine.shutdown();
+		}
 	}
 	
 	private synchronized ModeShapeEngine initEngine() {
