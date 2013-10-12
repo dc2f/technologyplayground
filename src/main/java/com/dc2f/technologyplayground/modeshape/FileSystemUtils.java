@@ -8,7 +8,7 @@ public class FileSystemUtils {
 	private FileSystemUtils() {
 	}
 	
-	FileSystemUtils getInstance() {
+	public static FileSystemUtils getInstance() {
 		return null;
 	}
 	
