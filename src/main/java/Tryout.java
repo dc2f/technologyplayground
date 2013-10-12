@@ -11,6 +11,7 @@ import javax.jcr.Session;
 import org.modeshape.common.collection.Problems;
 import org.modeshape.jcr.ModeShapeEngine;
 import org.modeshape.jcr.RepositoryConfiguration;
+import org.modeshape.jcr.api.JcrTools;
 
 public class Tryout {
 	public static void main(String[] args) {
@@ -19,9 +20,21 @@ public class Tryout {
 		
 		Session session = login(repository);
 		
-		writeData(session);
+		Node root = writeData(session);
+		
+		debugTree(root);
 
 
+	}
+
+	private static void debugTree(Node root) {
+		JcrTools tools = new JcrTools();
+		try {
+			tools.printSubgraph(root);
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private static Session login(Repository repository) {
@@ -36,7 +49,7 @@ public class Tryout {
 		return session;
 	}
 
-	private static void writeData(Session session) {
+	private static Node writeData(Session session) {
 		try {
 			// Create the '/files' node that is an 'nt:folder' ...
 			Node root = session.getRootNode();
@@ -51,10 +64,12 @@ public class Tryout {
 			Binary binary = session.getValueFactory().createBinary(stream);
 			contentNode.setProperty("jcr:data", binary);
 			session.save();
+			return root;
 		} catch (RepositoryException e) {
 			System.out.println("There was an error.");
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	private static Repository initRepository(ModeShapeEngine engine) {
