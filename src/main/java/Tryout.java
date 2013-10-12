@@ -26,7 +26,6 @@ public class Tryout {
 	public static void main(String[] args) {
 		ModeShapeEngine engine = initEngine();
 		Repository repository = initRepository(engine);
-		
 		Session session = login(repository);
 		
 		Node root = writeData(session);
@@ -35,7 +34,7 @@ public class Tryout {
 
 		readContent(session);
 
-
+		engine.shutdown();
 	}
 
 	private static void readContent(Session session) {
