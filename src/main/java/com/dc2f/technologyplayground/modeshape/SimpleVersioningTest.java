@@ -42,7 +42,7 @@ public class SimpleVersioningTest {
 //		
 //		repositoryProvider.releaseRepository();
 		
-		GenericRepositoryProvider repProv = GenericRepositoryProvider.getInstance();
+		GenericRepositoryFactory repProv = GenericRepositoryFactory.getInstance();
 		Repository repository = repProv.createMemoryRepository();
 		String fullVersioning = repository.getDescriptor(Repository.OPTION_VERSIONING_SUPPORTED);
 		logger.info("Got repository. supports full versioning: " + fullVersioning);

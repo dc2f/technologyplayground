@@ -15,13 +15,10 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-public class FileSystemUtils {
-	private FileSystemUtils() {
+public class FileSystemSynchronizer {
+	public FileSystemSynchronizer() {
 	}
 	
-	public static FileSystemUtils getInstance() {
-		return new FileSystemUtils();
-	}
 	
 	/**
 	 * imports given rootFolder recursively into baseNode of repository.

@@ -18,16 +18,16 @@ import javax.jcr.RepositoryFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
-public class GenericRepositoryProvider {
+public class GenericRepositoryFactory {
 
-	private static GenericRepositoryProvider instance;
+	private static GenericRepositoryFactory instance;
 
-	private GenericRepositoryProvider() {
+	private GenericRepositoryFactory() {
 	}
 
-	public static GenericRepositoryProvider getInstance() {
+	public static GenericRepositoryFactory getInstance() {
 		if (instance == null) {
-			instance = new GenericRepositoryProvider();
+			instance = new GenericRepositoryFactory();
 		}
 		return instance;
 	}
@@ -94,21 +94,5 @@ public class GenericRepositoryProvider {
 //	}
 	
 	
-	public void debugTree(Node tree) {
-		debugTree(tree, 1);
-	}
-	public void debugTree(Node tree, int depth) {
-//		System.out.println(" "tree.getName()
-		StringUtils.repeat(" ", depth*2);
-		NodeIterator nodes;
-		try {
-			nodes = tree.getNodes();
-		} catch (RepositoryException e) {
-			throw new RuntimeException(e);
-		}
-		while (nodes.hasNext()) {
-			Node node = nodes.nextNode();
-			debugTree(node, depth+1);
-		}
-	}
+
 }

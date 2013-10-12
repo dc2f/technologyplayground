@@ -1,5 +1,8 @@
 package com.dc2f.technologyplayground.modeshape;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 
 import javax.jcr.Node;
@@ -8,9 +11,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.junit.Test;
-import org.modeshape.jcr.api.JcrTools;
-
-import static org.junit.Assert.*;
 
 public class FileSystemUtilsTest {
 
@@ -34,12 +34,12 @@ public class FileSystemUtilsTest {
 	 */
 	@Test
 	public void loadTest() throws RepositoryException {
-		RepositoryProvider provider = RepositoryProvider.getInstance();
+		GenericRepositoryFactory provider = GenericRepositoryFactory.getInstance();
 		
-		Repository repository = provider.getRepository();
+		Repository repository = provider.createMemoryRepository();
 		Session session = repository.login("default");
 		Node root = session.getRootNode();
-		FileSystemUtils.getInstance().load(new File("testdata/fs-load-test"), root);		
+		new FileSystemSynchronizer().load(new File("testdata/fs-load-test"), root);		
 		session.save();
 	
 		assertFile(root, "a/f1.txt", "File 1");
@@ -47,8 +47,6 @@ public class FileSystemUtilsTest {
 		assertFile(root, "b/f3.txt", "File 3");
 		assertFile(root, "b/c/f4.txt", "File 4");
 		
-		JcrTools tools = new JcrTools(true);
-		tools.printSubgraph(session.getRootNode());
-		provider.releaseRepository();
+		session.logout();
 	}
 }

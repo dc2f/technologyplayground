@@ -23,31 +23,34 @@ import org.slf4j.LoggerFactory;
 
 public class VersionTest {
 	Logger logger = LoggerFactory.getLogger(VersionTest.class);
-	private GenericRepositoryProvider repositoryProvider;
-	private FileSystemUtils fileSystemUtils;
+	private GenericRepositoryFactory repositoryProvider;
+	private FileSystemSynchronizer fileSystemUtils;
 
 	private VersionTest() {
-		repositoryProvider = GenericRepositoryProvider.getInstance();
-		fileSystemUtils = FileSystemUtils.getInstance();
+		repositoryProvider = GenericRepositoryFactory.getInstance();
+		fileSystemUtils = new FileSystemSynchronizer();
 	}
 	
 	public void go() {
 		// Load repository
 		Repository rep = repositoryProvider.createMemoryRepository();
-		String fullVersioning = rep.getDescriptor(Repository.OPTION_VERSIONING_SUPPORTED);
-		logger.info("Got repository. supports full versioning: " + fullVersioning);
 		Path testDataFolder = createTestData();
 		try {
 			// create a session
 //			Session session = rep.login("default");
 			Session session = rep.login(new SimpleCredentials("username", "password".toCharArray()), "default");
 
+			String fullVersioning = rep.getDescriptor(Repository.OPTION_VERSIONING_SUPPORTED);
+			String simpleVersioning = rep.getDescriptor(Repository.OPTION_SIMPLE_VERSIONING_SUPPORTED);
+			logger.info("Got repository. supports full versioning: " + fullVersioning);
+			logger.info("Got repository. supports simple versioning: " + simpleVersioning);
+
 			// create a test node which is versionable.
 			Node rootNode = session.getRootNode();
 			Node testDataNode = rootNode.addNode("testDataNode", "nt:folder");
 			testDataNode.addMixin("mix:versionable");
 			session.save();
-			debugTree(testDataNode);
+			JcrUtils.debugTree(testDataNode);
 			
 
 			VersionManager versionManager = session.getWorkspace().getVersionManager();
@@ -75,7 +78,7 @@ public class VersionTest {
 			versionManager.checkout(testDataNode.getPath());
 			
 			debugVersionHistory(testDataNode, versionManager);
-			debugTree(testDataNode);
+			JcrUtils.debugTree(testDataNode);
 			
 			// now test to diff our two versions ..
 			session.getWorkspace().createWorkspace("second workspace", session.getWorkspace().getName());
@@ -94,7 +97,7 @@ public class VersionTest {
 			debugVersionHistory(cmpTestDataNode, cmpSession.getWorkspace().getVersionManager());
 //			cmpSession.getWorkspace().getVersionManager().restore(cmpVersion, true);
 			System.out.println("===========================================");
-			debugTree(cmpTestDataNode);
+			JcrUtils.debugTree(cmpTestDataNode);
 			System.out.println("===========================================");
 			compareNodes(cmpTestDataNode, testDataNode);
 			
@@ -146,9 +149,6 @@ public class VersionTest {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-	}
-	private void debugTree(Node root) {
-		repositoryProvider.debugTree(root);
 	}
 
 	private Path createTestData() {
