@@ -38,7 +38,7 @@ public class VersionTest {
 		try {
 			// create a session
 //			Session session = rep.login("default");
-			Session session = rep.login(new SimpleCredentials("username", "password".toCharArray()), "default");
+			Session session = repositoryProvider.loginWritable(rep, "default");
 
 			String fullVersioning = rep.getDescriptor(Repository.OPTION_VERSIONING_SUPPORTED);
 			String simpleVersioning = rep.getDescriptor(Repository.OPTION_SIMPLE_VERSIONING_SUPPORTED);

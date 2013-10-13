@@ -6,17 +6,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.ServiceLoader;
 
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
+import javax.jcr.LoginException;
+import javax.jcr.NoSuchWorkspaceException;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.RepositoryFactory;
+import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 
 public class GenericRepositoryFactory {
 
@@ -32,7 +32,7 @@ public class GenericRepositoryFactory {
 		return instance;
 	}
 	
-	private Map getTransientParameters() {
+	private Map<String, String> getTransientParameters() {
 //		Properties props = new Properties();
 //		try {
 //			props.load(getClass().getResourceAsStream("jackrabbit.properties"));
@@ -72,8 +72,12 @@ public class GenericRepositoryFactory {
 //		props.put("org.apache.jackrabbit.repository.conf", path);
 	}
 	
+	/**
+	 * make sure to call {@link #loginReadable(Repository, String)} and {@link #loginWritable(Repository, String)}
+	 * instead of repository.login(..)!
+	 */
 	public Repository createMemoryRepository() {
-		Map parameters = getTransientParameters();
+		Map<?,?> parameters = getTransientParameters();
 		for (RepositoryFactory factory : ServiceLoader.load(RepositoryFactory.class)) {
 			Repository repository = null;
 			try {
@@ -86,6 +90,32 @@ public class GenericRepositoryFactory {
 			}
 		}
 		return null;
+	}
+	
+	public Repository createJackrabbitRepository(String path) {
+		Map<String, String> parameters = getTransientParameters();
+		parameters.put("org.apache.jackrabbit.repository.home", path);
+		for (RepositoryFactory factory : ServiceLoader.load(RepositoryFactory.class)) {
+			Repository repository = null;
+			try {
+				repository = factory.getRepository(parameters);
+			} catch (RepositoryException e) {
+				// ignore for now.
+			}
+			if (repository != null) {
+				return repository;
+			}
+		}
+		return null;
+	}
+	
+	public Session loginWritable(Repository repository, String workspaceName) throws LoginException, NoSuchWorkspaceException, RepositoryException {
+//		return repository.login(new SimpleCredentials("username", "password".toCharArray()), workspaceName);
+		return repository.login(workspaceName);
+	}
+	
+	public Session loginReadable(Repository repository, String workspaceName) throws LoginException, NoSuchWorkspaceException, RepositoryException {
+		return repository.login(workspaceName);
 	}
 	
 	

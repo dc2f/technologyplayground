@@ -4,7 +4,6 @@ import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
@@ -48,7 +47,7 @@ public class SimpleVersioningTest {
 		logger.info("Got repository. supports full versioning: " + fullVersioning);
 
 //		TransientRepository repository = new TransientRepository();
-		Session session = repository.login(new SimpleCredentials("username", "password".toCharArray()));
+		Session session = repProv.loginWritable(repository, "default");
 		Node rootNode = session.getRootNode();
 		Node n = rootNode.addNode("childNode", "nt:unstructured");
 		versioningBasics(n, session);
