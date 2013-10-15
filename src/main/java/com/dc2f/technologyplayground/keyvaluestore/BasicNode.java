@@ -1,4 +1,4 @@
-package com.dc2f.technologyplayground;
+package com.dc2f.technologyplayground.keyvaluestore;
 
 import com.dc2f.technologyplayground.keyvaluestore.api.AttributeKey;
 import com.dc2f.technologyplayground.keyvaluestore.api.types.Attribute;

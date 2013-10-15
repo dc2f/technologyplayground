@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.dc2f.technologyplayground.BasicAttribute;
-import com.dc2f.technologyplayground.BasicNode;
 import com.dc2f.technologyplayground.keyvaluestore.api.Key;
 import com.dc2f.technologyplayground.keyvaluestore.api.types.Node;
 import com.dc2f.technologyplayground.keyvaluestore.persistent.PersistentKeyValueStore;
@@ -18,6 +16,7 @@ public class TestPersistenKeyValueStore {
 		Node node = new BasicNode();
 		node.addAttribute(new BasicAttribute(store.getKeyForAttributeName("content"), "MySmallContent"));
 		Key key = store.put(node);
+		assertNotNull(key);
 		store.close();
 		
 		PersistentKeyValueStore store2 = new PersistentKeyValueStore(storename);
@@ -27,4 +26,5 @@ public class TestPersistenKeyValueStore {
 		assertSame(node.hashCode(), node2.hashCode());
 		assertEquals("MySmallContent", node2.getAttribute(store.getKeyForAttributeName("content")));
 	}
+
 }
